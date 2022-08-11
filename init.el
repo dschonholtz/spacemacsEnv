@@ -67,7 +67,7 @@ This function should only modify configuration layer settings."
       javascript-fmt-tool 'web-beautify
       javascrcript-import-tool 'import-js
       javascript-fmt-on-save t)
-     docker
+     (docker :variables docker-dockerfile-backend 'lsp)
      (vue :variables node-add-modules-path t)
      ;; org
      (shell :variables
