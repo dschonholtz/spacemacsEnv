@@ -32,13 +32,13 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(python
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; auto-completion
+     (auto-completion :variables auto-completion-enable-help-tooltip t)
      ;; better-defaults
      emacs-lisp
      git
@@ -88,10 +88,11 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '((copilot :location (recipe
-                                                          :fetcher github
-                                                          :repo "zerolfx/copilot.el"
-                                                          :files ("*.el" "dist"))))
+   dotspacemacs-additional-packages
+     '((copilot :location (recipe
+                         :fetcher github
+                         :repo "zerolfx/copilot.el"
+                         :files ("*.el" "dist"))))
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -591,20 +592,17 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+
+  (defun schon/copilot-tab ()
+    (interactive)
+    (or (copilot-accept-completion)
+        (indent-for-tab-command)))
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (with-eval-after-load 'copilot
+    (evil-define-key 'insert copilot-mode-map
+      (kbd "<tab>") #'schon/copilot-tab)) 
+
   )
-;; accept completion from copilot and fallback to company
-
-(with-eval-after-load 'company
-  ;; disable inline previews
-  (delq 'company-preview-if-just-one-frontend company-frontends))
-
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-
-(add-hook 'prog-mode-hook 'copilot-mode)
-
-(define-key evil-insert-state-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-(define-key evil-insert-state-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
